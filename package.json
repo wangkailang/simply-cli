@@ -1,0 +1,23 @@
+{
+  "name": "simply-cli",
+  "version": "1.0.0",
+  "description": "simply node tools cli",
+  "main": "index.js",
+  "bin": {
+    "simply": "./index.js"
+  },
+  "keywords": [
+    "node",
+    "cli"
+  ],
+  "author": "wangkailang",
+  "license": "ISC",
+  "devDependencies": {
+    "chalk": "^4.1.0",
+    "commander": "^6.2.1",
+    "inquirer": "^7.3.3"
+  },
+  "dependencies": {
+    "mdpdf": "^2.1.2"
+  }
+}
