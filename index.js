@@ -1,8 +1,6 @@
 #! /usr/bin/env node
 
 const program = require('commander');
-const inquirer = require('inquirer');
-const chalk = require('chalk');
 const md2pdf = require('./commands/md2pdf');
 
 program

@@ -1,7 +1,11 @@
 const fs = require('fs');
-const chalk = require('chalk');
 const path = require('path');
 
+/**
+ * 列出目录下面的所有文件
+ * @param {string} dir 文件夹目录
+ * @returns {array} 文件路径数组
+ */
 function listDirFiles(dir) {
   const fileList = [];
   const files = fs.readdirSync(dir);

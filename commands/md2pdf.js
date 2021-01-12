@@ -1,15 +1,25 @@
 const mdpdf = require('mdpdf');
-const chalk = require('chalk');
 const path = require('path');
 const fs = require('fs');
 const listDirFiles = require('../utils/list-dir-files');
+const { error, success } = require('../utils/output');
 
-function mdFile2Pdf(sourceFile, targetDir) {
+async function asyncConvert(options) {
+  await new Promise((resolve, reject) => {
+    mdpdf.convert(options).then((pdfPath) => {
+      resolve(pdfPath);
+    }).catch((err) => {
+      reject(err);
+    });
+  })
+}
+
+async function mdFile2Pdf(sourceFile, targetDir) {
   const file = path.basename(sourceFile);
   const [fileName, ] = file.split('.');
   if (fs.existsSync(sourceFile)) {
-    console.log(chalk.greenBright(`文件 ${sourceFile} 转成 ${targetDir}/${fileName}.pdf.`));
-    let options = {
+    success(`文件 ${sourceFile} 转成 ${targetDir}/${fileName}.pdf.`);
+    const options = {
       source: sourceFile,
       destination: `${targetDir}/${fileName}.pdf`,
       ghStyle: true,
@@ -26,24 +36,31 @@ function mdFile2Pdf(sourceFile, targetDir) {
         }
       }
     };
-    mdpdf.convert(options).then((pdfPath) => {
-        console.log('PDF Path:', pdfPath);
-    }).catch((err) => {
-        console.error(err);
-    });
+    await asyncConvert(options);
   } else {
-    console.error(`File ${sourceFile} not find!`);
+    error(`文件 ${sourceFile} 不存在`);
   }
 }
 
-module.exports = function (options) {
+module.exports = async function (options) {
   const { sourceDir, sourceFile, targetDir, suffix = 'md' } = options;
   if (sourceDir) {
-    const sourceFiles = listDirFiles(sourceDir).filter(file => file.endsWith(suffix));
-    for(let i = 0; i < sourceFiles.length; i++) {
-      mdFile2Pdf(sourceFiles[i], targetDir);
+    const sourceDirStat = fs.statSync(sourceDir);
+    if (!sourceDirStat.isDirectory()) {
+      error(`${sourceDir} 不是文件目录`);
+    } else {
+      const sourceFiles = listDirFiles(sourceDir).filter(file => file.endsWith(suffix));
+      success(`检测到 ${sourceFiles.length} 个以 ${suffix} 为后缀的文件，将它们转为 pdf 格式...`);
+      for(let i = 0; i < sourceFiles.length; i++) {
+        await mdFile2Pdf(sourceFiles[i], targetDir);
+      }
     }
   } else {
-    mdFile2Pdf(sourceFile, targetDir);
+    const sourceFileStat = fs.statSync(sourceFile);
+    if (!sourceFileStat.isFile()) {
+      error(`${sourceFile} 不是文件`);
+    } else {
+      await mdFile2Pdf(sourceFile, targetDir);
+    }
   }
 }
