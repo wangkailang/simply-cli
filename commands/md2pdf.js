@@ -16,7 +16,11 @@ async function asyncConvert(options) {
 
 async function mdFile2Pdf(sourceFile, targetDir) {
   const file = path.basename(sourceFile);
-  const [fileName, ] = file.split('.');
+  let [fileName, ] = file.split('.');
+  if (fileName === 'index') {
+    const sourceArr = sourceFile.split('/');
+    fileName = sourceArr[sourceArr.length - 2];
+  }
   if (fs.existsSync(sourceFile)) {
     success(`文件 ${sourceFile} 转成 ${targetDir}/${fileName}.pdf.`);
     const options = {

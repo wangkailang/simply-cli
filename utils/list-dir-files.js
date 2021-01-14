@@ -6,8 +6,7 @@ const path = require('path');
  * @param {string} dir 文件夹目录
  * @returns {array} 文件路径数组
  */
-function listDirFiles(dir) {
-  const fileList = [];
+function listDirFiles(dir, fileList = [], isEnd = true) {
   const files = fs.readdirSync(dir);
   files.forEach(fileName=> {
     const fileDir = path.join(dir, fileName);
@@ -16,10 +15,12 @@ function listDirFiles(dir) {
     if (isFile) {
       fileList.push(fileDir);
     } else {
-      listDirFiles(fileDir);
+      listDirFiles(fileDir, fileList, false);
     }
   });
-  return fileList;
+  if (isEnd) {
+    return fileList;
+  }
 }
 
 module.exports = listDirFiles;
